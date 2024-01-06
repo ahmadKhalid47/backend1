@@ -528,4 +528,4 @@ app.delete("/deletePost/:target", checker, async (req, res) => {
 
 app.listen(port, () => {
   console.log("ok");
-});
+}); 
