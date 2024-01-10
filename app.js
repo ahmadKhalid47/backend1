@@ -16,7 +16,7 @@ let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
 let port = process.env.PORT || 8080;
 
-let getPath = path.resolve(__dirname, "../frontend/public");
+// let getPath = path.resolve(__dirname, "../frontend/public");
 
 mongoose.connect(mongodbKey);
 
@@ -204,16 +204,16 @@ app.get("/unFollow/:user/:target", checker, async (req, res) => {
   res.json({ result: colloction.acknowledged });
 });
 
-let uplaod = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, getPath);
-    },
-    filename: (req, file, cb) => {
-      cb(null, Date.now() + "-" + file.fieldname + ".jpg");
-    },
-  }),
-});
+// let uplaod = multer({
+//   storage: multer.diskStorage({
+//     destination: (req, file, cb) => {
+//       cb(null, getPath);
+//     },
+//     filename: (req, file, cb) => {
+//       cb(null, Date.now() + "-" + file.fieldname + ".jpg");
+//     },
+//   }),
+// });
 
 app.post("/post/:user", checker, uplaod.single("image"), async (req, res) => {
   if (req.file) {
@@ -304,39 +304,39 @@ app.get("/getLikes/:target", checker, async (req, res) => {
   res.json({ result: likesResult.likes });
 });
 
-app.post(
-  "/changeProfilePic/:user",
-  uplaod.single("image"),
-  async (req, res) => {
-    let previousProfilePic = await registerModel.findOne({
-      userName: req.params.user,
-    });
-    fs.unlink(`${getPath}/${previousProfilePic.profilePic}`, (err) => {});
-    await registerModel.updateOne(
-      { userName: req.params.user },
-      { $set: { profilePic: req.file.filename } }
-    );
-    res.json({ result: "likesResult.likes" });
-  }
-);
+// app.post(
+//   "/changeProfilePic/:user",
+//   uplaod.single("image"),
+//   async (req, res) => {
+//     let previousProfilePic = await registerModel.findOne({
+//       userName: req.params.user,
+//     });
+//     fs.unlink(`${getPath}/${previousProfilePic.profilePic}`, (err) => {});
+//     await registerModel.updateOne(
+//       { userName: req.params.user },
+//       { $set: { profilePic: req.file.filename } }
+//     );
+//     res.json({ result: "likesResult.likes" });
+//   }
+// );
 
 app.get("/changeProfilePic/:user", async (req, res) => {
   let post = await registerModel.findOne({ userName: req.params.user });
   res.json({ result: post.profilePic });
 });
 
-app.get("/deleteProfilePic/:user", async (req, res) => {
-  let previousProfilePic = await registerModel.findOne({
-    userName: req.params.user,
-  });
-  fs.unlink(`${getPath}/${previousProfilePic.profilePic}`, (err) => {});
+// app.get("/deleteProfilePic/:user", async (req, res) => {
+//   let previousProfilePic = await registerModel.findOne({
+//     userName: req.params.user,
+//   });
+//   fs.unlink(`${getPath}/${previousProfilePic.profilePic}`, (err) => {});
 
-  let deletePost = await registerModel.updateOne(
-    { userName: req.params.user },
-    { $set: { profilePic: null } }
-  );
-  res.json({ result: deletePost.acknowledged });
-});
+//   let deletePost = await registerModel.updateOne(
+//     { userName: req.params.user },
+//     { $set: { profilePic: null } }
+//   );
+//   res.json({ result: deletePost.acknowledged });
+// });
 
 app.get("/peopleProfile/:target", checker, async (req, res) => {
   let target = req.params.target;
