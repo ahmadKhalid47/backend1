@@ -14,7 +14,7 @@ app.use(express.json());
 
 let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
-let port = process.env.PORT || 5000;
+let port = process.env.PORT || 8080;
 
 let getPath = path.resolve(__dirname, "../frontend/public");
 
