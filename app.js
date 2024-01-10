@@ -46,14 +46,14 @@ let messagesSchema = mongoose.Schema({
 let registerModel = mongoose.model("account", registerSchema);
 let postsModel = mongoose.model("posts", postsSchema);
 let messagesModel = mongoose.model("messages", messagesSchema);
-
+ 
 app.get("/token", checker, (req, res) => {
   res.json({ result: "ok" });
 });
 
 app.get("/", (req, res) => {
-  res.send("hello on backend")
-})
+  res.send("Hello from Vercel!");
+});
 
 app.get("/login/:email/:password", async (req, res) => {
   let result = await registerModel.findOne({ email: req.params.email });
