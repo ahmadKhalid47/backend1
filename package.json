@@ -13,19 +13,7 @@
   "directories": {
     "build": "dist"
   },
-  "name": "your-project-name",
-  "version": "1.0.0",
-  "description": "Your project description",
-  "main": "app.js",
   "scripts": {
     "start": "node app.js"
-  },
-  "engines": {
-    "node": ">= 0.6"
-  },
-  "keywords": [
-    "node",
-    "express",
-    "website"
-  ]
+  }
 }
