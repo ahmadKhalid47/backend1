@@ -52,7 +52,7 @@ let port = process.env.PORT || 8080;
 // });
 
 app.get("/", (req, res) => {
-  res.send("Hello from Vercel!");
+  res.send("Hello from Vercel! backend");
 });
 
 // app.get("/login/:email/:password", async (req, res) => {
