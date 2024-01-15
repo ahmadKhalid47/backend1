@@ -9,7 +9,12 @@ let multer = require("multer");
 let path = require("path");
 require("dotenv").config();
 
-app.use(cors()); 
+app.use(
+  cors({
+    origin: "https://frontend1-gold.vercel.app",
+  })
+);
+
 app.use(express.json());
 
 let securityKey = process.env.TOKEN_SECURITY_KEY;
