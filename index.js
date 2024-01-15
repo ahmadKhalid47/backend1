@@ -11,7 +11,7 @@ require("dotenv").config();
 
 app.use(
   cors({
-    origin: "https://frontend1-gold.vercel.app",
+    origin: "https://frontend1-cyan.vercel.app",
   })
 );
 
