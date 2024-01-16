@@ -8,17 +8,19 @@ let multer = require("multer");
 let path = require("path");
 require("dotenv").config();
 
+
+let frontend_key = process.env.FRONTEND_KEY;
+let securityKey = process.env.TOKEN_SECURITY_KEY;
+let mongodbKey = process.env.MONGODB_KEY;
+let port = process.env.PORT || 8080;
+
 app.use(
   cors({
-    origin: "https://extraordinary-daifuku-8f2023.netlify.app",
+    origin: frontend_key,
   })
 );
 
 app.use(express.json());
-
-let securityKey = process.env.TOKEN_SECURITY_KEY;
-let mongodbKey = process.env.MONGODB_KEY;
-let port = process.env.PORT || 8080;
 
 let getPath = path.resolve(__dirname, "../frontend/public");
 
