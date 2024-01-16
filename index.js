@@ -1,4 +1,3 @@
-
 let express = require("express");
 let mongoose = require("mongoose");
 let cors = require("cors");
@@ -11,7 +10,7 @@ require("dotenv").config();
 
 app.use(
   cors({
-    origin: "https://frontend1-cyan.vercel.app",
+    origin: "https://extraordinary-daifuku-8f2023.netlify.app",
   })
 );
 
@@ -51,7 +50,7 @@ let messagesSchema = mongoose.Schema({
 let registerModel = mongoose.model("account", registerSchema);
 let postsModel = mongoose.model("posts", postsSchema);
 let messagesModel = mongoose.model("messages", messagesSchema);
- 
+
 app.get("/token", checker, (req, res) => {
   res.json({ result: "ok" });
 });
@@ -538,5 +537,4 @@ app.delete("/deletePost/:target", checker, async (req, res) => {
 
 app.listen(port, () => {
   console.log("ok");
-}); 
-
+});
