@@ -5,14 +5,32 @@ let fs = require("fs");
 let app = express();
 let jwt = require("jsonwebtoken");
 let multer = require("multer");
-let path = require("path");
+let { CloudinaryStorage } = require("multer-storage-cloudinary");
+let cloudinary = require("cloudinary").v2;
+
 require("dotenv").config();
 
+cloudinary.config({
+  cloud_name: "dcdynkm5d",
+  api_key: "157745433978489",
+  api_secret: "AqvKiU623z4vCZStGiBvBgk-2vQ",
+});
+
+const storage = new CloudinaryStorage({
+  cloudinary: cloudinary,
+  params: {
+    format: async (req, file) => "png",
+  },
+});
+
+const uplaod = multer({
+  storage: storage,
+});
 
 let frontend_key = process.env.FRONTEND_KEY;
 let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
-let port = process.env.PORT || 8080;
+let port = 5000;
 
 app.use(
   cors({
@@ -21,8 +39,6 @@ app.use(
 );
 
 app.use(express.json());
-
-let getPath = path.resolve(__dirname, "../frontend/public");
 
 mongoose.connect(mongodbKey);
 
@@ -55,10 +71,6 @@ let messagesModel = mongoose.model("messages", messagesSchema);
 
 app.get("/token", checker, (req, res) => {
   res.json({ result: "ok" });
-});
-
-app.get("/", (req, res) => {
-  res.send("Hello from Vercel! backend");
 });
 
 app.get("/login/:email/:password", async (req, res) => {
@@ -210,22 +222,12 @@ app.get("/unFollow/:user/:target", checker, async (req, res) => {
   res.json({ result: colloction.acknowledged });
 });
 
-let uplaod = multer({
-  storage: multer.diskStorage({
-    destination: (req, file, cb) => {
-      cb(null, getPath);
-    },
-    filename: (req, file, cb) => {
-      cb(null, Date.now() + "-" + file.fieldname + ".jpg");
-    },
-  }),
-});
-
 app.post("/post/:user", checker, uplaod.single("image"), async (req, res) => {
   if (req.file) {
+    let result = await cloudinary.uploader.upload(req.file.path);
     await postsModel({
       user: req.params.user,
-      post: req.file.filename,
+      post: result.secure_url,
       caption: req.body.caption,
       time: Date.now(),
     }).save();
@@ -314,14 +316,24 @@ app.post(
   "/changeProfilePic/:user",
   uplaod.single("image"),
   async (req, res) => {
+    console.log(req.file);
     let previousProfilePic = await registerModel.findOne({
       userName: req.params.user,
     });
-    fs.unlink(`${getPath}/${previousProfilePic.profilePic}`, (err) => {});
-    await registerModel.updateOne(
-      { userName: req.params.user },
-      { $set: { profilePic: req.file.filename } }
-    );
+      let result = await cloudinary.uploader.upload(req.file.path);
+      await registerModel.updateOne(
+        { userName: req.params.user },
+        { $set: { profilePic: result.secure_url } }
+      );
+
+    let imageToDelete = previousProfilePic.profilePic;
+    if (imageToDelete !== null) {
+      let imageToDeleteArray = imageToDelete.split("/");
+      let imageToDeletePublicId = `${
+        imageToDeleteArray[imageToDeleteArray.length - 1].split(".")[0]
+      }`;
+      await cloudinary.uploader.destroy(imageToDeletePublicId);
+    }
     res.json({ result: "likesResult.likes" });
   }
 );
@@ -335,12 +347,18 @@ app.get("/deleteProfilePic/:user", async (req, res) => {
   let previousProfilePic = await registerModel.findOne({
     userName: req.params.user,
   });
-  fs.unlink(`${getPath}/${previousProfilePic.profilePic}`, (err) => {});
+  let imageToDelete = previousProfilePic.profilePic;
+  let imageToDeleteArray = imageToDelete.split("/");
+  let imageToDeletePublicId = `${
+    imageToDeleteArray[imageToDeleteArray.length - 1].split(".")[0]
+  }`;
+  await cloudinary.uploader.destroy(imageToDeletePublicId);
 
   let deletePost = await registerModel.updateOne(
     { userName: req.params.user },
     { $set: { profilePic: null } }
   );
+
   res.json({ result: deletePost.acknowledged });
 });
 
@@ -487,7 +505,8 @@ app.get("/getAccountPrivacyState/:email", checker, async (req, res) => {
 
 app.post("/share/:email/:targetedPic", checker, async (req, res) => {
   let user = req.params.email;
-  let targetedPic = req.params.targetedPic;
+  let tempTargetedPic = req.params.targetedPic;
+  let targetedPic = tempTargetedPic.replaceAll("-", "/");
   let selectedPeople = req.body.selectedPeople;
 
   selectedPeople.forEach(async (item) => {
@@ -533,6 +552,11 @@ app.get("/notifications/:email", checker, async (req, res) => {
 });
 
 app.delete("/deletePost/:target", checker, async (req, res) => {
+  let findPost = await postsModel.findOne({ _id: req.params.target });
+  let imageToDeleteArray = findPost.post.split("/");
+  let imageToDelete = imageToDeleteArray[imageToDeleteArray.length - 1];
+  let imageToDeletePublicId = imageToDelete.split(".")[0];
+  await cloudinary.uploader.destroy(imageToDeletePublicId);
   await postsModel.deleteOne({ _id: req.params.target });
   res.json({ result: "deleted" });
 });
