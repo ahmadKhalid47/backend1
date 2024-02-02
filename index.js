@@ -30,7 +30,7 @@ const uplaod = multer({
 let frontend_key = process.env.FRONTEND_KEY;
 let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
-let port = 5000;
+let port = process.env.PORT || 5000;
 
 app.use(
   cors({
@@ -320,11 +320,11 @@ app.post(
     let previousProfilePic = await registerModel.findOne({
       userName: req.params.user,
     });
-      let result = await cloudinary.uploader.upload(req.file.path);
-      await registerModel.updateOne(
-        { userName: req.params.user },
-        { $set: { profilePic: result.secure_url } }
-      );
+    let result = await cloudinary.uploader.upload(req.file.path);
+    await registerModel.updateOne(
+      { userName: req.params.user },
+      { $set: { profilePic: result.secure_url } }
+    );
 
     let imageToDelete = previousProfilePic.profilePic;
     if (imageToDelete !== null) {
