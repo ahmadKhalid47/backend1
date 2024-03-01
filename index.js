@@ -1,7 +1,6 @@
 let express = require("express");
 let mongoose = require("mongoose");
 let cors = require("cors");
-let fs = require("fs");
 let app = express();
 let jwt = require("jsonwebtoken");
 let multer = require("multer");
@@ -32,11 +31,13 @@ let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
 let port = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin: frontend_key,
-  })
-);
+app.use(cors());
+
+// app.use(
+//   cors({
+//     origin: frontend_key,
+//   })
+// );
 
 app.use(express.json());
 
