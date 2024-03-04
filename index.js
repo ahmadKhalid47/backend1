@@ -383,14 +383,19 @@ app.get("/peopleProfile/:target", checker, async (req, res) => {
     followersProfilePic: followersInfoData.map((item) => item.profilePic),
     followingsProfilePic,
   };
-  
+
   res.json({ result: infoObj });
 });
 
 app.get("/messages/:email", checker, async (req, res) => {
   let userData = await registerModel.findOne({ email: req.params.email });
   let followings = userData.following;
-  res.json({ result: followings });
+  let followersArray = await registerModel.find({
+    following: req.params.email,
+  });
+  let followers = followersArray.map((item) => item.email);
+  let messagePeople = followers.filter((item) => followings.includes(item));
+  res.json({ result: messagePeople });
 });
 
 app.get("/getfollowingsList/:email", checker, async (req, res) => {
@@ -468,7 +473,7 @@ app.get("/searchResult/:searchText", checker, async (req, res) => {
     $or: [
       { email: new RegExp(searchText, "i") },
       { userName: new RegExp(searchText, "i") },
-    ], 
+    ],
   });
   let filteredArray = searchedArray.map((item) => ({
     email: item.email,
