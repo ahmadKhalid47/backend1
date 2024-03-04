@@ -315,7 +315,6 @@ app.post(
   "/changeProfilePic/:user",
   uplaod.single("image"),
   async (req, res) => {
-    console.log(req.file);
     let previousProfilePic = await registerModel.findOne({
       userName: req.params.user,
     });
