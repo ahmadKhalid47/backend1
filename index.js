@@ -36,10 +36,11 @@ app.use(
     origin: frontend_key,
   })
 );
+// app.use(cors());
 
 app.use(express.json());
 
-mongoose.connect(mongodbKey);
+mongoose.connect(mongodbKey); 
 
 let registerSchema = mongoose.Schema({
   email: String,
