@@ -36,7 +36,6 @@ app.use(
     origin: frontend_key,
   })
 );
-// app.use(cors());
 
 app.use(express.json());
 
