@@ -31,15 +31,15 @@ let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
 let port = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin: frontend_key,
-  })
-);
-
+// app.use(
+//   cors({
+//     origin: frontend_key,
+//   })
+// );
+app.use(cors());
 app.use(express.json());
 
-mongoose.connect(mongodbKey); 
+mongoose.connect(mongodbKey);
 
 let registerSchema = mongoose.Schema({
   email: String,
@@ -370,13 +370,12 @@ app.get("/peopleProfile/:target", checker, async (req, res) => {
   });
 
   let followingsProfilePic = [];
-  for (let i = 0; i < postsInfoData.length; i++) {
+  for (let i = 0; i < personalInfoData.following.length; i++) {
     let followingsProfilePicFind = await registerModel.findOne({
-      email: { $in: postsInfoData[i].following },
+      email: { $in: personalInfoData.following[i] },
     });
-    followingsProfilePic.push(followingsProfilePicFind);
+    followingsProfilePic.push(followingsProfilePicFind.profilePic);
   }
-
   let infoObj = {
     personalInfo: personalInfoData,
     posts: postsInfoData,
@@ -384,6 +383,9 @@ app.get("/peopleProfile/:target", checker, async (req, res) => {
     followersProfilePic: followersInfoData.map((item) => item.profilePic),
     followingsProfilePic,
   };
+  
+  console.log(infoObj);
+
   res.json({ result: infoObj });
 });
 
