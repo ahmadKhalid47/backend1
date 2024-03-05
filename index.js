@@ -315,21 +315,27 @@ app.post(
   "/changeProfilePic/:user",
   uplaod.single("image"),
   async (req, res) => {
+    console.log("Started");
+    console.log("user", req.params.user);
     let previousProfilePic = await registerModel.findOne({
       userName: req.params.user,
     });
+    console.log("path", req.file.path);
     let result = await cloudinary.uploader.upload(req.file.path);
     await registerModel.updateOne(
       { userName: req.params.user },
       { $set: { profilePic: result.secure_url } }
     );
-
+    console.log("previousProfilePic: ", previousProfilePic);
     let imageToDelete = previousProfilePic.profilePic;
-    if (imageToDelete !== null) {
+    console.log("imageToDelete", imageToDelete);
+    if (imageToDelete) {
       let imageToDeleteArray = imageToDelete.split("/");
+      console.log("imageToDeleteArray", imageToDeleteArray);
       let imageToDeletePublicId = `${
         imageToDeleteArray[imageToDeleteArray.length - 1].split(".")[0]
       }`;
+      console.log("imageToDeletePublicId: ", imageToDeletePublicId);
       await cloudinary.uploader.destroy(imageToDeletePublicId);
     }
     res.json({ result: "likesResult.likes" });
