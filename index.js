@@ -31,12 +31,12 @@ let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
 let port = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin: frontend_key,
-  })
-);
-// app.use(cors());
+// app.use(
+//   cors({
+//     origin: frontend_key,
+//   })
+// );
+app.use(cors());
 app.use(express.json());
 
 mongoose.connect(mongodbKey);
