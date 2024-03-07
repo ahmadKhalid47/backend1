@@ -31,12 +31,12 @@ let securityKey = process.env.TOKEN_SECURITY_KEY;
 let mongodbKey = process.env.MONGODB_KEY;
 let port = process.env.PORT || 5000;
 
-app.use(
-  cors({
-    origin: frontend_key,
-  })
-);
-// app.use(cors());
+// app.use(
+//   cors({
+//     origin: frontend_key,
+//   })
+// );
+app.use(cors());
 app.use(express.json());
 
 mongoose.connect(mongodbKey);
@@ -399,7 +399,12 @@ app.get("/messages/:email", checker, async (req, res) => {
 app.get("/getfollowingsList/:email", checker, async (req, res) => {
   let userData = await registerModel.findOne({ email: req.params.email });
   let followings = userData.following;
-  res.json({ result: followings });
+  let followersArray = await registerModel.find({
+    following: req.params.email,
+  });
+  let followers = followersArray.map((item) => item.email);
+  let messagePeople = followers.filter((item) => followings.includes(item));
+  res.json({ result: messagePeople });
 });
 
 app.post("/messageTo/:user/:target", checker, async (req, res) => {
